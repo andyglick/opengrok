@@ -49,5 +49,7 @@ cov-int/*
 egrok/bin
 pmd.bat
 *.iml
+*.ipr
+*.iws
 .idea
 *.pyc
