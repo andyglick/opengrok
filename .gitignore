@@ -47,6 +47,10 @@ jacoco.exec
 cov-int.zip
 cov-int/*
 pmd.bat
+
+*.log
+
+*.lo
 *.iml
 *.ipr
 *.iws
