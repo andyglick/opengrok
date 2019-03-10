@@ -30,7 +30,7 @@ jdepend/report.xml
 lib/derby.jar
 lib/jrcs.jar
 lib/lucene-*
-lib/servlet-api-*
+lib/javax.servlet-api-*
 lib/bcel-*
 lib/junit-*
 lib/hamcrest-core-*
@@ -46,10 +46,11 @@ jacoco
 jacoco.exec
 cov-int.zip
 cov-int/*
-egrok/bin
 pmd.bat
 *.iml
 *.ipr
 *.iws
 .idea
 *.pyc
+.wercker
+.DS_Store

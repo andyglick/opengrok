@@ -18,7 +18,7 @@
  */
 
 /*
- * Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017, 2019, Oracle and/or its affiliates. All rights reserved.
  */
 package opengrok.auth.plugin;
 
@@ -32,9 +32,9 @@ import opengrok.auth.plugin.entity.User;
 import opengrok.auth.plugin.ldap.AbstractLdapProvider;
 import opengrok.auth.plugin.ldap.FakeLdapFacade;
 import opengrok.auth.plugin.ldap.LdapFacade;
-import org.opensolaris.opengrok.authorization.IAuthorizationPlugin;
-import org.opensolaris.opengrok.configuration.Group;
-import org.opensolaris.opengrok.configuration.Project;
+import org.opengrok.indexer.authorization.IAuthorizationPlugin;
+import org.opengrok.indexer.configuration.Group;
+import org.opengrok.indexer.configuration.Project;
 
 /**
  * Abstract class for all plug-ins working with LDAP. Takes care of
@@ -51,7 +51,7 @@ import org.opensolaris.opengrok.configuration.Project;
  *
  * @author Krystof Tulinger
  */
-abstract public class AbstractLdapPlugin implements IAuthorizationPlugin {
+public abstract class AbstractLdapPlugin implements IAuthorizationPlugin {
 
     /**
      * This is used to ensure that every instance of this plug-in has its own
@@ -62,7 +62,7 @@ abstract public class AbstractLdapPlugin implements IAuthorizationPlugin {
     protected static final String CONFIGURATION_PARAM = "configuration";
     protected static final String FAKE_PARAM = "fake";
 
-    private final static String SESSION_PREFIX = "opengrok-abstract-ldap-plugin-";
+    private static final String SESSION_PREFIX = "opengrok-abstract-ldap-plugin-";
     protected String SESSION_USERNAME = SESSION_PREFIX + "username";
     protected String SESSION_ESTABLISHED = SESSION_PREFIX + "session-established";
 
@@ -80,7 +80,7 @@ abstract public class AbstractLdapPlugin implements IAuthorizationPlugin {
     /**
      * LDAP lookup facade.
      */
-    private AbstractLdapProvider ldap;
+    private AbstractLdapProvider ldapProvider;
 
     public AbstractLdapPlugin() {
         SESSION_USERNAME += "-" + nextId;
@@ -94,7 +94,7 @@ abstract public class AbstractLdapPlugin implements IAuthorizationPlugin {
      * @param req the current request
      * @param user user decoded from the headers
      */
-    abstract public void fillSession(HttpServletRequest req, User user);
+    public abstract void fillSession(HttpServletRequest req, User user);
 
     /**
      * Decide if the project should be allowed for this request.
@@ -103,7 +103,7 @@ abstract public class AbstractLdapPlugin implements IAuthorizationPlugin {
      * @param project the project
      * @return true if yes; false otherwise
      */
-    abstract public boolean checkEntity(HttpServletRequest request, Project project);
+    public abstract boolean checkEntity(HttpServletRequest request, Project project);
 
     /**
      * Decide if the group should be allowed for this request.
@@ -112,7 +112,7 @@ abstract public class AbstractLdapPlugin implements IAuthorizationPlugin {
      * @param group the group
      * @return true if yes; false otherwise
      */
-    abstract public boolean checkEntity(HttpServletRequest request, Group group);
+    public abstract boolean checkEntity(HttpServletRequest request, Group group);
 
     /**
      * Loads the configuration into memory.
@@ -124,7 +124,7 @@ abstract public class AbstractLdapPlugin implements IAuthorizationPlugin {
 
         if ((fake = (Boolean) parameters.get(FAKE_PARAM)) != null
                 && fake) {
-            ldap = new FakeLdapFacade();
+            ldapProvider = new FakeLdapFacade();
             return;
         }
         
@@ -134,7 +134,7 @@ abstract public class AbstractLdapPlugin implements IAuthorizationPlugin {
 
         try {
             cfg = getConfiguration(configurationPath);
-            ldap = new LdapFacade(cfg);
+            ldapProvider = new LdapFacade(cfg);
         } catch (IOException ex) {
             throw new IllegalArgumentException("Unable to read the configuration", ex);
         }
@@ -162,9 +162,9 @@ abstract public class AbstractLdapPlugin implements IAuthorizationPlugin {
      */
     @Override
     public void unload() {
-        if (ldap != null) {
-            ldap.close();
-            ldap = null;
+        if (ldapProvider != null) {
+            ldapProvider.close();
+            ldapProvider = null;
         }
         cfg = null;
     }
@@ -184,7 +184,7 @@ abstract public class AbstractLdapPlugin implements IAuthorizationPlugin {
      * @return the LDAP provider
      */
     public AbstractLdapProvider getLdapProvider() {
-        return ldap;
+        return ldapProvider;
     }
 
     /**
@@ -254,7 +254,7 @@ abstract public class AbstractLdapPlugin implements IAuthorizationPlugin {
 
         updateSession(req, user.getUsername(), false);
 
-        if (ldap == null) {
+        if (ldapProvider == null) {
             return;
         }
 

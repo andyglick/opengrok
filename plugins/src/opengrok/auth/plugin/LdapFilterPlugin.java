@@ -18,7 +18,7 @@
  */
 
 /*
- * Copyright (c) 2016, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2019 Oracle and/or its affiliates. All rights reserved.
  */
 package opengrok.auth.plugin;
 
@@ -31,8 +31,8 @@ import java.util.regex.PatternSyntaxException;
 import javax.servlet.http.HttpServletRequest;
 import opengrok.auth.entity.LdapUser;
 import opengrok.auth.plugin.entity.User;
-import org.opensolaris.opengrok.configuration.Group;
-import org.opensolaris.opengrok.configuration.Project;
+import org.opengrok.indexer.configuration.Group;
+import org.opengrok.indexer.configuration.Project;
 
 /**
  * Authorization plug-in to check if given user matches configured LDAP filter.
@@ -44,12 +44,13 @@ public class LdapFilterPlugin extends AbstractLdapPlugin {
     private static final Logger LOGGER = Logger.getLogger(LdapFilterPlugin.class.getName());
 
     protected static final String FILTER_PARAM = "filter";
-    protected String SESSION_ALLOWED = "opengrok-filter-plugin-allowed";
+    private static final String SESSION_ALLOWED_PREFIX = "opengrok-filter-plugin-allowed";
+    private String sessionAllowed = SESSION_ALLOWED_PREFIX;
 
     private String ldapFilter;
 
     public LdapFilterPlugin() {
-        SESSION_ALLOWED += "-" + nextId++;
+        sessionAllowed += "-" + nextId++;
     }
 
     @Override
@@ -65,7 +66,7 @@ public class LdapFilterPlugin extends AbstractLdapPlugin {
     @Override
     protected boolean sessionExists(HttpServletRequest req) {
         return super.sessionExists(req)
-                && req.getSession().getAttribute(SESSION_ALLOWED) != null;
+                && req.getSession().getAttribute(sessionAllowed) != null;
     }
 
     @Override
@@ -73,7 +74,7 @@ public class LdapFilterPlugin extends AbstractLdapPlugin {
         Boolean sessionAllowed = false;
         LdapUser ldapUser;
         Map<String, Set<String>> records;
-        String dn[] = {"dn"};
+        String[] dn = {"dn"};
 
         updateSession(req, sessionAllowed);
 
@@ -151,16 +152,16 @@ public class LdapFilterPlugin extends AbstractLdapPlugin {
      * @param allowed the new value
      */
     protected void updateSession(HttpServletRequest req, boolean allowed) {
-        req.getSession().setAttribute(SESSION_ALLOWED, allowed);
+        req.getSession().setAttribute(sessionAllowed, allowed);
     }
 
     @Override
     public boolean checkEntity(HttpServletRequest request, Project project) {
-        return ((Boolean) request.getSession().getAttribute(SESSION_ALLOWED));
+        return ((Boolean) request.getSession().getAttribute(sessionAllowed));
     }
 
     @Override
     public boolean checkEntity(HttpServletRequest request, Group group) {
-        return ((Boolean) request.getSession().getAttribute(SESSION_ALLOWED));
+        return ((Boolean) request.getSession().getAttribute(sessionAllowed));
     }
 }

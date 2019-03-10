@@ -18,7 +18,7 @@
  */
 
 /*
- * Copyright (c) 2016, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2018 Oracle and/or its affiliates. All rights reserved.
  */
 package opengrok.auth.plugin;
 
@@ -31,9 +31,9 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import opengrok.auth.entity.LdapUser;
 import opengrok.auth.plugin.entity.User;
-import org.opensolaris.opengrok.configuration.Group;
-import org.opensolaris.opengrok.configuration.Project;
-import org.opensolaris.opengrok.util.StringUtils;
+import org.opengrok.indexer.configuration.Group;
+import org.opengrok.indexer.configuration.Project;
+import org.opengrok.indexer.util.StringUtils;
 
 /**
  * Authorization plug-in to extract user's LDAP attributes.
@@ -114,7 +114,7 @@ public class LdapUserPlugin extends AbstractLdapPlugin {
         String filter = getFilter(user);
         if ((records = getLdapProvider().lookupLdapContent(null, filter,
                 new String[]{"uid", "mail", "ou"})) == null) {
-            LOGGER.log(Level.WARNING, "failed to get LDAP contents for user '{0}' with filter '{1}'",
+            LOGGER.log(Level.WARNING, "failed to get LDAP contents for user ''{0}'' with filter ''{1}''",
                     new Object[]{user, filter});
             return;
         }

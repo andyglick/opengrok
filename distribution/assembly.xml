@@ -15,77 +15,58 @@
         <destName>plugins.jar</destName>
       </file>
       <file>
-	<source>${project.build.directory}/dist/opengrok-web-${version}.war</source>
-	<outputDirectory>lib</outputDirectory>
+        <source>${project.build.directory}/dist/opengrok-web-${version}.war</source>
+        <outputDirectory>lib</outputDirectory>
         <destName>source.war</destName>
+      </file>
+      <file>
+        <source>${project.basedir}/../opengrok-tools/${project.build.directory}/dist/opengrok-tools-${project.python.package.version}.tar.gz</source>
+        <outputDirectory>tools</outputDirectory>
+        <destName>opengrok-tools.tar.gz</destName>
+      </file>
+      <file>
+         <source>${project.basedir}/../opengrok-tools/README-dist.txt</source>
+         <outputDirectory>tools</outputDirectory>
+         <destName>README.txt</destName>
+      </file>
+      <file>
+        <source>${project.basedir}/../opengrok-tools/${project.build.directory}/dist/logging.properties.template</source>
+        <outputDirectory>doc</outputDirectory>
+        <destName>logging.properties.template</destName>
       </file>
     </files>
     <fileSets>
         <fileSet>
-	    <directory>${project.basedir}/..</directory>
-	    <outputDirectory>doc</outputDirectory>
-	    <includes>
-	      <include>README*</include>
-	      <include>LICENSE*</include>
-	      <include>CHANGES*</include>
-	      <include>paths.tsv</include>
-	      <include>logging.properties</include>
-	    </includes>
+          <directory>${project.basedir}/..</directory>
+          <outputDirectory>doc</outputDirectory>
+          <includes>
+            <include>README*</include>
+            <include>LICENSE*</include>
+            <include>CHANGES*</include>
+            <include>paths.tsv</include>
+            <include>logging.properties</include>
+          </includes>
         </fileSet>
         <fileSet>
-	    <directory>${project.basedir}/../doc</directory>
-	    <outputDirectory>doc</outputDirectory>
-	    <includes>
-	      <include>README*</include>
-	      <include>authorization_howto.txt</include>
-	      <include>ctags.config</include>
-	      <include>EXAMPLE.txt</include>
-	      <include>groups_howto.txt</include>
-	    </includes>
+          <directory>${project.build.directory}/dist</directory>
+          <outputDirectory>man/man1</outputDirectory>
+          <includes>
+            <include>opengrok.1</include>
+          </includes>
         </fileSet>
         <fileSet>
-	    <directory>${project.build.directory}/dist</directory>
-	    <outputDirectory>man/man1</outputDirectory>
-	    <includes>
-	      <include>opengrok.1</include>
-	    </includes>
+          <directory>${project.build.directory}/../lib</directory>
+          <outputDirectory>lib/lib</outputDirectory>
+          <includes>
+            <include>*.jar</include>
+          </includes>
         </fileSet>
         <fileSet>
-	    <directory>${project.basedir}/..</directory>
-	    <outputDirectory>bin</outputDirectory>
-	    <includes>
-	      <include>OpenGrok</include>
-	    </includes>
-        </fileSet>
-        <fileSet>
-	    <directory>${project.basedir}/../tools</directory>
-	    <outputDirectory>bin</outputDirectory>
-	    <includes>
-	      <include>ConfigMerge</include>
-	      <include>Messages</include>
-	      <include>Groups</include>
-	    </includes>
-        </fileSet>
-        <fileSet>
-	    <directory>${project.basedir}/../tools/sync</directory>
-	    <outputDirectory>bin</outputDirectory>
-	    <includes>
-	      <include>*.py</include>
-	    </includes>
-        </fileSet>
-        <fileSet>
-            <directory>${project.build.directory}/../lib</directory>
-	    <outputDirectory>lib/lib</outputDirectory>
-	    <includes>
-	      <include>*.jar</include>
-	    </includes>
-        </fileSet>
-        <fileSet>
-            <directory>${project.build.directory}/dist</directory>
-	    <outputDirectory>lib/lib</outputDirectory>
-	    <includes>
-	      <include>*.jar</include>
-	    </includes>
+          <directory>${project.build.directory}/dist</directory>
+          <outputDirectory>lib/lib</outputDirectory>
+          <includes>
+            <include>*.jar</include>
+          </includes>
         </fileSet>
     </fileSets>
 </assembly>

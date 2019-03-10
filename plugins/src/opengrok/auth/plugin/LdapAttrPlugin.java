@@ -18,7 +18,7 @@
  */
 
 /*
- * Copyright (c) 2016, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2018 Oracle and/or its affiliates. All rights reserved.
  */
 package opengrok.auth.plugin;
 
@@ -32,8 +32,8 @@ import java.util.stream.Stream;
 import javax.servlet.http.HttpServletRequest;
 import opengrok.auth.entity.LdapUser;
 import opengrok.auth.plugin.entity.User;
-import org.opensolaris.opengrok.configuration.Group;
-import org.opensolaris.opengrok.configuration.Project;
+import org.opengrok.indexer.configuration.Group;
+import org.opengrok.indexer.configuration.Project;
 
 /**
  * Authorization plug-in to check user's LDAP attribute against whitelist.
@@ -45,13 +45,14 @@ public class LdapAttrPlugin extends AbstractLdapPlugin {
     protected static final String ATTR_PARAM = "attribute";
     protected static final String FILE_PARAM = "file";
 
-    public String SESSION_ALLOWED = "opengrok-attr-plugin-allowed";
+    private static final String SESSION_ALLOWED_PREFIX = "opengrok-attr-plugin-allowed";
+    private String sessionAllowed = SESSION_ALLOWED_PREFIX;
 
     private String ldapAttr;
     private final Set<String> whitelist = new TreeSet<>();
 
     public LdapAttrPlugin() {
-        SESSION_ALLOWED += "-" + nextId++;
+        sessionAllowed += "-" + nextId++;
     }
 
     @Override
@@ -77,7 +78,7 @@ public class LdapAttrPlugin extends AbstractLdapPlugin {
     @Override
     protected boolean sessionExists(HttpServletRequest req) {
         return super.sessionExists(req)
-                && req.getSession().getAttribute(SESSION_ALLOWED) != null;
+                && req.getSession().getAttribute(sessionAllowed) != null;
     }
 
     @SuppressWarnings("unchecked")
@@ -125,16 +126,16 @@ public class LdapAttrPlugin extends AbstractLdapPlugin {
      * @param allowed the new value
      */
     protected void updateSession(HttpServletRequest req, boolean allowed) {
-        req.getSession().setAttribute(SESSION_ALLOWED, allowed);
+        req.getSession().setAttribute(sessionAllowed, allowed);
     }
     
     @Override
     public boolean checkEntity(HttpServletRequest request, Project project) {
-        return ((Boolean) request.getSession().getAttribute(SESSION_ALLOWED));
+        return ((Boolean) request.getSession().getAttribute(sessionAllowed));
     }
 
     @Override
     public boolean checkEntity(HttpServletRequest request, Group group) {
-        return ((Boolean) request.getSession().getAttribute(SESSION_ALLOWED));
+        return ((Boolean) request.getSession().getAttribute(sessionAllowed));
     }
 }
